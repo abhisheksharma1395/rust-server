@@ -1,0 +1,19 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: rust-server
+  namespace: default
+spec:
+  template:
+    spec:
+      runtimeClassName: crun
+      timeoutSeconds: 1
+      containers:
+      - name: rust-server
+        image: docker.io/adroitx/rust-server:latest
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        livenessProbe:
+          tcpSocket:
+            port: 8080
