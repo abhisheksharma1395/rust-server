@@ -1,0 +1,33 @@
+# Build image
+FROM rust:alpine as builder
+
+RUN apk add --no-cache musl-dev
+
+RUN mkdir /server
+WORKDIR /server
+COPY . .
+
+RUN cargo build --release
+
+# Final image
+FROM alpine:latest
+
+ENV USER="app"
+
+# Define user that executes the echo-server
+RUN addgroup -S $USER
+RUN adduser -S -g $USER $USER
+
+RUN mkdir /server
+WORKDIR /server
+
+COPY --from=builder /server/target/release/rust-server /server/rust-server
+COPY --from=builder /server/index.html /server/index.html
+RUN chown -R $USER:$USER /server
+
+USER $USER
+
+# Expose default port of echo-server
+EXPOSE 8080
+
+ENTRYPOINT ["/server/rust-server"]
