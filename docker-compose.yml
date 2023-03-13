@@ -1,0 +1,10 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: rust-server
+  namespace: default
+spec:
+  template:
+    spec:
+    containers:
+      - image: docker.io/adroitx/rust-server
